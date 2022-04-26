@@ -3,13 +3,48 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\PostAssociationController;
 use App\Repository\AssociationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+/**
+ * @Vich\Uploadable
+ */
 #[ORM\Entity(repositoryClass: AssociationRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: [
+        'get',
+        'post' => [
+            'path' => '/association',
+            'controller' => PostAssociationController::class,
+            'deserialize' => false,
+            'validation_groups' => ['Default', 'media_object_create'],
+            'openapi_context' => [
+                'requestBody' => [
+                    'content' => [
+                        'multipart/form-data' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'file' => [
+                                        'type' => 'string',
+                                        'format' => 'binary',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    itemOperations: ['get'],
+    normalizationContext: ['groups' => ['media_object:read']]
+)]
 class Association
 {
     #[ORM\Id]
@@ -22,6 +57,13 @@ class Association
 
     #[ORM\Column(type: 'string', length: 255)]
     private $logo;
+
+    /**
+     * @Vich\UploadableField(mapping="assos_image", fileNameProperty="logo")
+     */
+    #[Assert\NotNull(groups: ['media_object_create'])]
+    private ?File $file = null;
+
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'associations')]
     private $users;
@@ -114,6 +156,36 @@ class Association
                 $event->setAssociation(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    /**
+     * @param File|null $file
+     * @return Association
+     */
+    public function setFile(?File $file): Association
+    {
+        $this->file = $file;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
