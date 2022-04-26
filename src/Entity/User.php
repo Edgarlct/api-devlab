@@ -36,7 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $age;
 
     #[ORM\Column(type: 'boolean')]
-    private $isOffice;
+    private $isOffice = false;
 
     #[ORM\ManyToMany(targetEntity: Association::class, mappedBy: 'users')]
     private $associations;
