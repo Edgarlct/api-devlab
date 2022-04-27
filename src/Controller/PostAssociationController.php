@@ -11,17 +11,15 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 #[AsController]
 final class PostAssociationController extends AbstractController
 {
-    public function __invoke(Request $request): Association
+    public function __invoke(Request $request)
     {
         $uploadedFile = $request->files->get('file');
         if (!$uploadedFile) {
-            throw new BadRequestHttpException('"file" is required');
+            throw new BadRequestHttpException('file is required');
         }
         $asso = New Association();
-        $asso->setLogo('');
-        $asso->setName('l');
+        $asso->setName($request->request->get('name'));
         $asso->setFile($uploadedFile);
-        $asso->setUpdatedAt(new \DateTimeImmutable());
         return $asso;
     }
 }
