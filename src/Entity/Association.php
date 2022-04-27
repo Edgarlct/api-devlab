@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -17,7 +18,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: AssociationRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'get',
         'post' => [
             'path' => '/association',
             'controller' => PostAssociationController::class,
@@ -42,7 +42,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             ],
         ],
     ],
-    itemOperations: ['get'],
+    itemOperations: ['get', 'put', 'delete', 'patch'],
     normalizationContext: ['groups' => ['media_object:read']]
 )]
 class Association
@@ -50,12 +50,15 @@ class Association
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['media_object:read'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['media_object:read'])]
     private $name;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['media_object:read'])]
     private $logo;
 
     /**
@@ -71,10 +74,14 @@ class Association
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Event::class, orphanRemoval: true)]
     private $events;
 
+    #[ORM\OneToMany(mappedBy: 'associationOffice', targetEntity: User::class)]
+    private $officeMember;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->officeMember = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -186,6 +193,36 @@ class Association
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getOfficeMember(): Collection
+    {
+        return $this->officeMember;
+    }
+
+    public function addOfficeMember(User $officeMember): self
+    {
+        if (!$this->officeMember->contains($officeMember)) {
+            $this->officeMember[] = $officeMember;
+            $officeMember->setAssociationOffice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOfficeMember(User $officeMember): self
+    {
+        if ($this->officeMember->removeElement($officeMember)) {
+            // set the owning side to null (unless already changed)
+            if ($officeMember->getAssociationOffice() === $this) {
+                $officeMember->setAssociationOffice(null);
+            }
+        }
 
         return $this;
     }

@@ -35,14 +35,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private $age;
 
-    #[ORM\Column(type: 'boolean')]
-    private $isOffice = false;
-
     #[ORM\ManyToMany(targetEntity: Association::class, mappedBy: 'users')]
     private $associations;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Ticket::class, orphanRemoval: true)]
     private $tickets;
+
+    #[ORM\ManyToOne(targetEntity: Association::class, inversedBy: 'officeMember')]
+    private $associationOffice;
 
     public function __construct()
     {
@@ -156,18 +156,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getIsOffice(): ?bool
-    {
-        return $this->isOffice;
-    }
-
-    public function setIsOffice(bool $isOffice): self
-    {
-        $this->isOffice = $isOffice;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Association>
      */
@@ -221,6 +209,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $ticket->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAssociationOffice(): ?Association
+    {
+        return $this->associationOffice;
+    }
+
+    public function setAssociationOffice(?Association $associationOffice): self
+    {
+        $this->associationOffice = $associationOffice;
 
         return $this;
     }
