@@ -69,12 +69,15 @@ class Association
 
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'associations')]
+    #[Groups(['media_object:read'])]
     private $users;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Event::class, orphanRemoval: true)]
+    #[Groups(['media_object:read'])]
     private $events;
 
     #[ORM\OneToMany(mappedBy: 'associationOffice', targetEntity: User::class)]
+    #[Groups(['media_object:read'])]
     private $officeMember;
 
     public function __construct()
