@@ -12,7 +12,7 @@ class TicketController extends AbstractController
 {
     #[Route(
         path: '/api/events/{id}/participant',
-        name: 'app_checkout',
+        name: 'app_ticket',
         methods: ['GET'])]
 
 
