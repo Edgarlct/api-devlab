@@ -93,6 +93,10 @@ class Association
     #[Groups(['media_object:read'])]
     private $officeMember;
 
+    #[ORM\Column(type: 'text')]
+    #[Groups(['media_object:read'])]
+    private $description;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -239,6 +243,18 @@ class Association
                 $officeMember->setAssociationOffice(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
