@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\AssosController;
 use App\Controller\PostAssociationController;
 use App\Repository\AssociationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -41,8 +42,20 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
                 ],
             ],
         ],
+        'get',
+        'get_associations' => [
+            'method' => 'GET',
+            'path' => '/associations/me',
+            'controller' => AssosController::class,
+            'validation_groups' => ['Default', 'assso:me'],
+        ]
     ],
-    itemOperations: ['get', 'put', 'delete', 'patch'],
+    itemOperations: [
+        'get',
+        'put',
+        'delete',
+        'patch',
+    ],
     normalizationContext: ['groups' => ['media_object:read']]
 )]
 class Association
