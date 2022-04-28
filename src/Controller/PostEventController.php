@@ -29,6 +29,8 @@ final class PostEventController extends AbstractController
         $event->setFile($uploadedFile);
         $event->setPlaceNumber($request->request->get('place'));
         $event->setPlaceRemaining($request->request->get('place'));
+        $event->setNamePlace($request->request->get('namePlace'));
+        $event->setAdresse($request->request->get('adresse'));
         return $event;
     }
 }

@@ -89,6 +89,15 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     #[Assert\NotNull(groups: ['events_object_create'])]
     private ?File $file = null;
 
+    #[ORM\Column(type: 'text')]
+    private $description;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $namePlace;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $adresse;
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
@@ -228,6 +237,42 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     public function setPath(string $path): self
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getNamePlace(): ?string
+    {
+        return $this->namePlace;
+    }
+
+    public function setNamePlace(string $namePlace): self
+    {
+        $this->namePlace = $namePlace;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): self
+    {
+        $this->adresse = $adresse;
 
         return $this;
     }
